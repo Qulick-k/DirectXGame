@@ -11,6 +11,27 @@ dx3d::GraphicsEngine::GraphicsEngine(const GraphicsEngineDesc& desc): Base(desc.
 
 	auto& device = *m_graphicsDevice;
 	m_deviceContext = device.createDeviceContext();
+
+	//使用constexpr 在compile time evaluate數值
+	constexpr char shaderSourceCode[] =
+		R"(
+void VSMain()
+{
+}
+void PSMain()
+{
+}
+)";
+	constexpr char shaderSourceName[] = "Basic";
+	constexpr auto shaderSourceCodeSize = std::size(shaderSourceCode);
+
+	auto vs = device.compileShader({shaderSourceName, shaderSourceCode, shaderSourceCodeSize,
+		"VSMain", ShaderType::VertexShader});
+
+	auto ps = device.compileShader({ shaderSourceName, shaderSourceCode, shaderSourceCodeSize,
+		"PSMain", ShaderType::PixelShader });
+
+	m_pipeline = device.createGraphicsPipelineState({ *vs, *ps });
 }
 
 dx3d::GraphicsEngine::~GraphicsEngine()
@@ -26,7 +47,8 @@ void dx3d::GraphicsEngine::render(SwapChain& swapChain)
 {
 	auto& context = *m_deviceContext;
 	context.clearAndSetBackBuffer(swapChain, { 1,0,0,1});
-
+	context.setGraphicsPipelineState(*m_pipeline);
+	
 	auto& device = *m_graphicsDevice;
 	device.executeCommandList(context);
 	swapChain.present();
