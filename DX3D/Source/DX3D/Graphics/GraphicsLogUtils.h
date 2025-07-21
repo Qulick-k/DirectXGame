@@ -12,23 +12,13 @@ namespace dx3d
 			auto errorMsg = errorBlob ? static_cast<const char*>(errorBlob->GetBufferPointer()) : nullptr;
 
 			if (FAILED(hr))
-			{
-				if (errorMsg)
-				{
-					DX3DLogThrow(logger, std::runtime_error, Logger::LogLevel::Error, errorMsg);
-				}
-				else
-				{
-					DX3DLogThrow(logger, std::runtime_error, Logger::LogLevel::Error, 
-						"Shader compilation failed.");
-				}
-			}
+				//?如果有錯誤訊息就pass it，否則就使用預設"Shader compilation failed."錯誤訊息
+				DX3DLogThrow(logger, std::runtime_error, Logger::LogLevel::Error, errorMsg ? errorMsg :
+					"Shader compilation failed.");			
 
 			if (errorMsg)
-			{
 				//如果有錯誤訊息，則記錄
 				DX3DLog(logger, Logger::LogLevel::Warning, errorMsg);
-			}
 		}
 	}
 }

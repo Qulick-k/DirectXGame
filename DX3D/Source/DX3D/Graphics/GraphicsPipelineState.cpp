@@ -13,6 +13,18 @@ dx3d::GraphicsPipelineState::GraphicsPipelineState(const GraphicsPipelineStateDe
 	auto vs = desc.vs.getData();          //retrive vertex shader data
 	auto ps = desc.ps.getData();          //retrive pixel shader data
 	
+	constexpr D3D11_INPUT_ELEMENT_DESC elements[] = //一個指標指向d3d11輸入元素desk物件，描述節點格式如位置或顏色
+	{
+		//第二個屬性用來區分不同的變數，但是共用同一個Semantic的名字
+		//第四個屬性告訴d3d vertex buffer的元素從哪來
+		//第六個屬性被用來Instance rendering，目前專案沒使用，因此設為0
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	};
+		
+	DX3DGraphicsLogThrowOnFail(
+		m_device.CreateInputLayout(elements, std::size(elements), vs.data, vs.dataSize, &m_layout),
+		"CreateInputLayout failed.");   //透過呼叫輸入布局，創建布局
+
 	DX3DGraphicsLogThrowOnFail(
 		m_device.CreateVertexShader(vs.data, vs.dataSize, nullptr, &m_vs),
 		"CreateVertexShader failed.");   //check the result on fail macro
