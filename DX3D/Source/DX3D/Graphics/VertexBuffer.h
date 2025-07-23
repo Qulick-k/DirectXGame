@@ -14,7 +14,7 @@ namespace dx3d
 		ui32 m_vertexSize{};
 		ui32 m_vertexListSize{};
 
-		friend class DeviceContext;
+		friend class DeviceContext; 
 	};
 }
 
